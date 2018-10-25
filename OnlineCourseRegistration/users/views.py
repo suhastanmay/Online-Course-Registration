@@ -4,7 +4,7 @@ from .forms import CustomUserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 
-from .models import Course, Detail,AuditCourse
+from .models import Course, Detail, Grade, Student, AuditCourse
 
 # Create your views here.
 class SignUp(generic.CreateView):
@@ -14,12 +14,31 @@ class SignUp(generic.CreateView):
 
 def index(request):
 	courses = Course.objects.all()
-	context = {'courses': courses}
+	total_courses = len(Course.objects.all())
+	print(total_courses)
+	context = {'courses': courses, 'total_courses': total_courses}
 	return render(request, 'users/home.html', context)
 
 def details(request, course_id):
 	course = get_object_or_404(Course, pk=course_id)
 	return render(request, 'users/details.html', {'course':course})
+
+def add_student(request):
+	if request.method == 'POST':
+		student = Student()
+		student.name = request.POST.get('name')
+		student.roll = request.POST.get('roll_number')
+		student.email = request.POST.get('mail')
+		student.year = request.POST.get('year')
+		student.save()
+		#print(student.roll, student.year)
+
+	else:
+		print('error in request')
+
+	students = Student.objects.all()
+	context = {'students': students}
+	return render(request, 'users/students.html', context)
 
 def add_course(request):
 	if request.method == 'POST':
@@ -38,17 +57,33 @@ def add_course(request):
 	else:
 		return HttpResponseRedirect('/users')
 
+def add_grade(request):
+	if request.method == 'POST':
+		grade = Grade()
+		grade.student_id = request.POST.get('user_id')
+		grade.course = request.POST.get('course')
+		grade.grade_point = request.POST.get('grade_point')
+		grade.save()
+		return HttpResponseRedirect('/users')
+	else :
+		return HttpResponseRedirect('/users')
+
 def add_course_details(request, course_id):
 	print('req recieved')
-	details = get_object_or_404(Detail, pk=course_id)
+	#details = get_object_or_404(Detail, pk=course_id)
+	#details = Detail.objects.get(pk=course_id)
+	# details = Detail.objects.create(pk=course_id)
+	print(course_id)
 	if request.method == 'POST':
-		details.min_GPA = request.POST.get('min_GPA')
-		details.description = request.POST.get('description')
+		details = Detail.objects.create(course_id=course_id, min_GPA=request.POST.get('min_GPA'), description=request.POST.get('description'))
+		# details.min_GPA = request.POST.get('min_GPA')
+		# details.description = request.POST.get('description')
 		details.save()
 		print(details.min_GPA, details.description)
 		return HttpResponseRedirect('/users')
 	else:
 		return HttpResponseRedirect('/users')
+
 
 def audit_course(request):
 	if request.method == 'POST':
