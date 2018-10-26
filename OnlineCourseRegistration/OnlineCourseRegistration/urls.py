@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('index.html/',views.index,name='index'),
     path('signup/', views.SignUp.as_view(), name='signup'),
+    path('faculty/', views.faculty,name='faculty'),
     path('home.html',TemplateView.as_view(template_name='users/home.html'),name="home"),
     path('users/', include('users.urls')),
 	path('users/', include('django.contrib.auth.urls'))
