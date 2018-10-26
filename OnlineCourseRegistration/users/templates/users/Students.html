@@ -128,7 +128,7 @@ window.history.back();
               <h4>Select Courses</h4>
             </div>
    <!-------- Earlier form entry ------->  
-           <form method="POST"  enctype="multipart/form-data" id="cform">
+           <form method="POST" id="cform" action="/users/register_course">
    			 {% csrf_token %}
     		{{ form.data }}
             <table id="ctable" class="table table-striped">
@@ -142,19 +142,18 @@ window.history.back();
               </thead>
               <tbody>
               {#% from users.models import AcademicCourses%#}
-              {% for set in querysets %}              
+              {% for course in academ %}              
                 <tr>
                   <td ><input type="checkbox" />    &nbsp;   </td>
-                   <td class="cid" name="cid"> {{ set.academic_course_id }} </td>
-                  <td class="cname" name="cname">   {{ set.academic_course_name }} </td>
+                   <td class="cid" name="cid" value=""> {{ course.academic_course_id }} </td>
+                  <td class="cname" name="cname">   {{ course.academic_course_name }} </td>
                    <td> 
-                     <button type="submit" class="ForDetails" name="Details">Details</button>  
+                     <button  class="ForDetails" name="Details">Details</button>  
                    </td>
                 </tr>
                 {% endfor %}
               </tbody>
-            </table>            
-             </form>             
+            </table>                  
             <script>             
             
     		$('document').ready(function()
@@ -237,11 +236,11 @@ window.history.back();
   </div>
   <div class="col-md-6">
   <div class="btn-toolbar float-right">
-         <button type="submit" class="btn btn-primary btn-md mr-2"  value="Save Courselist">Save Courselist</button>  
+         <button class="btn btn-primary btn-md mr-2"  value="Save Courselist">Save Courselist</button>  
         <button type="submit" class="btn btn-primary btn-md mr-1" value="Submit list">Submit</button>
    </div>  
   </div>
-  
+  </form>
   </div>
   
  </section>

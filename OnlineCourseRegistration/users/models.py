@@ -62,4 +62,4 @@ class AcademicCourse(models.Model):
     academic_course_description = models.CharField(db_column='Academic_Course_Description', max_length=250, blank=True, null=True)  # Field name made lowercase.
 
     def __str__(self):
-    	return self.description
+    	return self.academic_course_name
