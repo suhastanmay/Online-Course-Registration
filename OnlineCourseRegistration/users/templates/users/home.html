@@ -31,13 +31,17 @@
             <a href="{% url 'users:index' %}" class="nav-link active">Dashboard</a>
           </li>
           <li class="nav-item px-2">
-            <a href="users/Students.html" class="nav-link">Students</a>
+            <a href="Students.html" class="nav-link">Students</a>
           </li>
           <li class="nav-item px-2">
             <a href="categories.html" class="nav-link">Subjects</a>
           </li>
           <li class="nav-item px-2">
+<<<<<<< HEAD
             <a href="{% url 'faculty' %}" class="nav-link">Faculty</a>
+=======
+            <a href="{% url 'users:faculty' %}" class="nav-link">Faculty</a>
+>>>>>>> 46b7ecb7a2ff39815db8c97e82b7a90981e185c9
           </li>
         </ul>
 
@@ -94,13 +98,22 @@
         <div class="col-md-2">
 
           <a href="#" class="btn btn-success btn-block" data-toggle="modal" data-target="#addGradeModal">
-            <i class="fas fa-plus"></i> Add Grades
+            <i class="fas fa-plus"></i> Add Grade
           </a>
         </div>
+<<<<<<< HEAD
 
         <div class="col-md-3">
+=======
+        <div class="col-md-4">
+>>>>>>> 46b7ecb7a2ff39815db8c97e82b7a90981e185c9
             <a href="#" class="btn btn-success btn-block" data-toggle="modal" data-target="#publishCourseRegistrationsModal">
               <i class="fas fa-plus"></i> Publish Course Registration
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'users:approve_req' %}" class="btn btn-success btn-block">
+              <i class="fas fa-plus"></i> Approve Requests
             </a>
         </div>
         <!-- <div class="col-md-3">
@@ -151,7 +164,7 @@
               <h4 class="display-4">
                 <i class="fas fa-pencil-alt"></i> {{ total_courses }}
               </h4>
-              <a href="posts.html" class="btn btn-outline-light btn-sm">View</a>
+              <!-- <a href="posts.html" class="btn btn-outline-light btn-sm">View</a> -->
             </div>
           </div>
 
@@ -159,9 +172,9 @@
             <div class="card-body">
               <h3>Prof</h3>
               <h4 class="display-4">
-                <i class="fas fa-folder"></i> 4
+                <i class="fas fa-chalkboard-teacher"></i>
               </h4>
-              <a href="categories.html" class="btn btn-outline-light btn-sm">View</a>
+              <!-- <a href="categories.html" class="btn btn-outline-light btn-sm">View</a> -->
             </div>
           </div>
 
@@ -337,6 +350,11 @@
 </html>
 {% else %}
   <p>You are not logged in</p>
-  <a href="{% url 'login' %}">login</a> |
+  <li class="nav-item">
+    <a href="https://serene-wildwood-35121.herokuapp.com/login/5bd0b1740f4c3c00151cc92a/"
+       class="nav-link">
+        <i class="fas fa-user-alt"></i> Login
+    </a>
+</li>
 {% endif %}
 {% endblock %}

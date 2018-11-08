@@ -4,13 +4,17 @@ from .forms import CustomUserCreationForm
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 
-from .models import Course, Detail, Grade, Student, AuditCourse, AcademicCourse
-from .models import *
 
+from .models import Course, Detail, Grade, Student, AuditCourse, AcademicCourse, BufferSpecialPermissionsTable
+from .models import *
+from django.contrib.auth import login, logout
 from django.views import View
 from django.contrib.auth import *
-
+import requests, json
 from .models import Course, Detail,AcademicCourse
+from .models import Course, Detail, Grade, Student, AuditCourse, AcademicCourse, Register, final_Register
+from django.views import View
+import operator
 
 
 # Create your views here.
@@ -25,6 +29,48 @@ def index(request):
 	print(total_courses)
 	context = {'courses': courses, 'total_courses': total_courses}
 	return render(request, 'users/home.html', context)
+
+# def get_user(email, password):
+# 	try:
+# 		user = CustomUser.objects.get(email=email)
+# 	except Exception as e:
+# 		user = CustomUser()
+# 		user.username = email
+# 		user.email = email
+# 	user.set_password(password)
+# 	user.save()
+
+# 	user = authenticate(username=email, password=password)
+# 	return user
+
+def callback(request, token):
+	print(token)
+	print('req recieved')
+	email, password = auth_api(token)
+	# user = get_user(email,password)
+	# login(request, user)
+	# print('successful', email, password)
+
+	user = authenticate(username=email, password=password)
+	login(request, user)
+	return HttpResponseRedirect('/users')
+
+def auth_api(token):
+	try:
+		res = requests.post(url=' https://serene-wildwood-35121.herokuapp.com/oauth/getDetails', data={
+            'token': token,
+            'secret': '1332df120a84c36c569571a7153d38d74f642304a985cc988c965fa225f33af51ee7ffb475897e91dfa7c53e4673487c48894584f5b314a6fffbb9d89f18bad5'
+        })
+		res = json.loads(res.content)
+		email = res['student'][0]['Student_Email']
+		password = 'iamstudent'
+
+		print (email, password)
+		return email, password
+
+	except Exception as e:
+		print(e)
+		return None, None
 
 def details(request, course_id):
 	course = get_object_or_404(Course, pk=course_id)
@@ -83,7 +129,9 @@ def add_course_details(request, course_id):
 def special_req(request, course_id):
 	print('req recieved', course_id)
 	if request.method == 'POST':
-		special_req = SpecialPermissions.objects.create(course_id=course_id, req=request.POST.get('req'))
+		special_req = BufferSpecialPermissionsTable.objects.create(course_id=course_id, req=request.POST.get('req'))
+
+		# special_req = SpecialPermissions.objects.create(course_id=course_id, req=request.POST.get('req'))
 		special_req.save()
 		print(special_req.id, special_req.req)
 	else:
@@ -94,6 +142,26 @@ def special_req(request, course_id):
 
 	return HttpResponseRedirect('/users')
 
+def approve_req(request):
+	special_reqs = BufferSpecialPermissionsTable.objects.all()
+	context = {'special_reqs': special_reqs}
+	return render(request, 'users/approve_req.html', context)
+
+def special_req_res_acc(request, request_id):
+	special_req = get_object_or_404(BufferSpecialPermissionsTable, pk=request_id)
+	special_req.status = 'Accepted'
+	special_req.save()
+	special_reqs = BufferSpecialPermissionsTable.objects.all()
+	context = {'special_reqs': special_reqs}
+	return render(request, 'users/approve_req.html', context)
+
+def special_req_res_dec(request, request_id):
+	special_req = get_object_or_404(BufferSpecialPermissionsTable, pk=request_id)
+	special_req.status = 'Declined'
+	special_req.save()
+	special_reqs = BufferSpecialPermissionsTable.objects.all()
+	context = {'special_reqs': special_reqs}
+	return render(request, 'users/approve_req.html', context)
 
 def audit_course(request):
 	if request.method == 'POST':
@@ -107,7 +175,104 @@ def audit_course(request):
 
 def publish_course_registration(request):
 	if request.method == 'POST':
-		print('req reieved')
+		subject = request.POST.get('course')
+		print('subject')
+		print(subject)
+		course = list(Course.objects.all())
+		c = []
+		#print('course')
+		#print(course)
+		for i in course:
+			c.append(str(i).split(' - '))
+		for i in c:
+			if subject in i:
+				max = i[-1]
+				break
+		#print('max')
+		#print(max)
+		student_list = []
+		student = list(Student.objects.all())
+		#print('student')
+		#print(student)
+		for i in student:
+			student_list.append(str(i).split(' - '))
+		student_list_sel = []
+		#print('student_list')
+		#print(student_list)
+		"""for i in student_list:
+			if subject in i:
+				student_list_sel.append(i)
+		"""
+		register = list(Register.objects.all())
+		reg = []
+		for i in register:
+			reg.append(str(i).split(' - '))
+		for i in reg:
+			if subject in i:
+				student_list_sel.append(i)
+		#print('student_list_sel')
+		#print(student_list_sel)
+		enroll_dict = {}
+		#print('reg')
+		#print(reg)
+		for i in student_list_sel:
+			for j in student_list:
+				if i[0] == j[1]:
+					enroll_dict[i[0]] = j[-1]
+		#print('enroll_dict')
+		#print(enroll_dict)
+		enroll_sorted = sorted(enroll_dict.items(), key=lambda kv:kv[1], reverse=True)
+		#print('enroll_sorted')
+		#print(enroll_sorted)
+		enroll_list = []
+		#print('len')
+		#print(len(enroll_list))
+		for i in range(len(enroll_sorted)):
+			enroll_list.append(enroll_sorted[i][0])
+		print(enroll_list)
+
+		for i in range(len(enroll_list)):
+			final = final_Register()
+			final.student_id = enroll_list[i]
+			final.course=subject
+			final.save()
+		li=[]
+		for i in list(final_Register.objects.filter(course=subject)):
+			k=str(i).split(' - ')
+			li.append(k)
+		final={'x':enroll_list , 'sub':subject}
+		print(final)
+	return render(request, 'users/publish_course_registrations.html',final)
+
+def ClassRoaster(request):
+	if request.method == 'POST':
+		register = list(Register.objects.all())
+		reg = []
+		for i in register:
+			reg.append(str(i).split(' - '))
+	return render(request,'users/faculty.html')
+
+def view_registration(request):
+	roll_no='S20160020125'
+	li=[]
+	for i in list(final_Register.objects.filter(student_id='S20160020125')):
+		k=str(i).split(' - ')
+		li.append(k)
+	print(li)
+	lis=[]
+	for i in range(len(li)):
+		lis.append(li[i][1])
+	lis=unique(lis)
+	final={'x':lis}
+	print(final)
+	return render(request, 'users/view_registrations.html',final)
+
+def unique(list1): 
+	unique_list = [] 
+	for x in list1:
+		if x not in unique_list:
+			unique_list.append(x)
+	return unique_list
 
 def faculty(request):
 	print('yes')
@@ -135,13 +300,28 @@ class CourseListView(View):
 	
 	def post(self, request, *args, **kwargs):
 		print("Received post request")
+<<<<<<< HEAD
 		idval = request.POST['cid']
 		print("In post id is "+str(idval))
 
+=======
+		tosave = request.POST.getlist('saveCourse')
+		print(tosave[0])
+		academiccourse = get_object_or_404(AcademicCourse, pk=tosave[0])
+		print(academiccourse.academic_course_description," ",academiccourse.academic_course_name)
+		tablesave = AcademicProgBatchSemCourse.objects.create(academic_prog_batch_sem_course_id=tosave[0],academic_prog_batch_sem_course_sem_num=5,academic_prog_batch_sem_course_credits=4,academic_prog_batch_sem_course_eval_code='1',academic_prog_batch_sem_course_status ='open',academic_prog_batch_sem_coursecol='')
+		querysets = AcademicCourse.objects.exclude(academic_course_id=tosave[0]).only("academic_course_id", "academic_course_name")
+		messages.success(request, 'Course record saved successfully!')
+		return render(request,self.template_name,{'querysets': querysets})
+		
+		
+		
+		
+>>>>>>> 46b7ecb7a2ff39815db8c97e82b7a90981e185c9
 	def coursedetails(request, academic_course_id,val):
 		academiccourse = get_object_or_404(AcademicCourse, pk=academic_course_id)
 		print(academiccourse.academic_course_description," ",academiccourse.academic_course_name)
-		return redirect('/users/coursedetails.html',academiccourse=academiccourse)
+		return HttpResponseRedirect('/users/coursedetails.html')
 		#return render(request,'users/coursedetails.html',{'querysets': querysets})	
 		#return HttpResponseRedirect('/users/coursedetails.html')
 		#return render(request, "users/coursedetails.html", {'academiccourse':academiccourse})

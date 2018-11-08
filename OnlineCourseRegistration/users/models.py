@@ -13,7 +13,7 @@ class Course(models.Model):
 	max_students = models.IntegerField()
 
 	def __str__(self):
-		return u'%s %s' % (self.name, self.prof)
+		return u'%s - %s - %s' % (self.name, self.prof, self.max_students)
 
 class SpecialPermissions(models.Model):
 	course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -22,14 +22,24 @@ class SpecialPermissions(models.Model):
 	def __str__(self):
 		return self.req
 
+class BufferSpecialPermissionsTable(models.Model):
+	course = models.ForeignKey(Course, on_delete=models.CASCADE)
+	req = models.CharField(max_length=20)
+	status = models.CharField(max_length=4, default='pending')
+	email = models.CharField(max_length=30)
+
+	def __str__(self):
+		return self.req
+
 class Student(models.Model):
 	name = models.CharField(max_length=30)
 	roll = models.CharField(max_length=12)
 	year = models.CharField(max_length=4)
-	email = models.CharField(max_length=20)
+	email = models.CharField(max_length=40)
+	cgpa = models.FloatField(max_length=4,null=True)
 
 	def __str__(self):
-		return self.roll
+		return u'%s - %s - %s - %s - %s' % (self.name, self.roll, self.year, self.email, self.cgpa)
 
 class Detail(models.Model):
 	course = models.ForeignKey(Course, on_delete = models.CASCADE)
@@ -37,7 +47,7 @@ class Detail(models.Model):
 	description = models.CharField(max_length=200)
 
 	def __str__(self):
-		return self.description
+		return u'%s %s %s' % (self.course, self.min_GPA, self.description)
 
 
 class Grade(models.Model):
@@ -46,8 +56,21 @@ class Grade(models.Model):
 	grade_point = models.CharField(max_length=20, null=True)
 
 	def __str__(self):
-		return u'%s %s %s' % (self.student_id, self.course, self.grade_point)
+		return u'%s - %s - %s' % (self.student_id, self.course, self.grade_point)
 
+class Register(models.Model):
+	student_id = models.CharField(max_length=20, null=True)
+	course = models.CharField(max_length=20, null=True)
+
+	def __str__(self):
+		return u'%s - %s' % (self.student_id, self.course) 
+
+class final_Register(models.Model):
+	student_id = models.CharField(max_length=20, null=True)
+	course = models.CharField(max_length=20, null=True)
+	def __str__(self):
+		return u'%s - %s' % (self.student_id, self.course) 
+	
 class AuditCourse(models.Model):
 	roll = models.CharField(max_length=20)
 	name = models.CharField(max_length=20)
@@ -62,4 +85,19 @@ class AcademicCourse(models.Model):
     academic_course_description = models.CharField(db_column='Academic_Course_Description', max_length=250, blank=True, null=True)  # Field name made lowercase.
 
     def __str__(self):
+<<<<<<< HEAD
     	return self.academic_course_name
+=======
+    	return self.description
+
+class AcademicProgBatchSemCourse(models.Model):
+    academic_prog_batch_sem_course_id = models.IntegerField(db_column='Academic_Prog_Batch_Sem_Course_Id', primary_key=True,unique=True)  # Field name made lowercase.
+    academic_prog_batch_sem_course_sem_num = models.IntegerField(db_column='Academic_Prog_Batch_Sem_Course_Sem_Num')  # Field name made lowercase.
+    academic_prog_batch_sem_course_credits = models.IntegerField(db_column='Academic_Prog_Batch_Sem_Course_Credits', blank=True, null=True)  # Field name made lowercase.
+    academic_prog_batch_sem_course_eval_code = models.CharField(db_column='Academic_Prog_Batch_Sem_Course_Eval_Code', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    academic_prog_batch_sem_course_status = models.CharField(db_column='Academic_Prog_Batch_Sem_Course_Status', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    academic_prog_batch_sem_coursecol = models.CharField(db_column='Academic_Prog_Batch_Sem_Coursecol', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    
+    def __str__(self):
+    	return self.description
+>>>>>>> 46b7ecb7a2ff39815db8c97e82b7a90981e185c9
