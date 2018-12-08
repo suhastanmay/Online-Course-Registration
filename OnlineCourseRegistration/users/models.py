@@ -51,7 +51,6 @@ class Detail(models.Model):
 	def __str__(self):
 		return u'%s %s %s' % (self.course, self.min_GPA, self.description)
 
-
 class Grade(models.Model):
 	student_id = models.CharField(max_length=20, null=True)
 	course = models.CharField(max_length=20, null=True)
