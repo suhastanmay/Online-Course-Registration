@@ -21,7 +21,7 @@ import operator
 class SignUp(generic.CreateView):
 	form_class = CustomUserCreationForm
 	success_url = reverse_lazy('login')
-	template_name = 'Signup.html'
+	template_name = 'users/Signup.html'
 
 def index(request):
 	courses = Course.objects.all()
@@ -52,6 +52,7 @@ def callback(request, token):
 	# print('successful', email, password)
 
 	user = authenticate(username=email, password=password)
+	print(user)
 	login(request, user)
 	return HttpResponseRedirect('/users')
 
@@ -300,12 +301,8 @@ class CourseListView(View):
 	
 	def post(self, request, *args, **kwargs):
 		print("Received post request")
-<<<<<<< HEAD
 		idval = request.POST['cid']
 		print("In post id is "+str(idval))
-
-=======
-		tosave = request.POST.getlist('saveCourse')
 		print(tosave[0])
 		academiccourse = get_object_or_404(AcademicCourse, pk=tosave[0])
 		print(academiccourse.academic_course_description," ",academiccourse.academic_course_name)
@@ -313,11 +310,7 @@ class CourseListView(View):
 		querysets = AcademicCourse.objects.exclude(academic_course_id=tosave[0]).only("academic_course_id", "academic_course_name")
 		messages.success(request, 'Course record saved successfully!')
 		return render(request,self.template_name,{'querysets': querysets})
-		
-		
-		
-		
->>>>>>> 46b7ecb7a2ff39815db8c97e82b7a90981e185c9
+
 	def coursedetails(request, academic_course_id,val):
 		academiccourse = get_object_or_404(AcademicCourse, pk=academic_course_id)
 		print(academiccourse.academic_course_description," ",academiccourse.academic_course_name)

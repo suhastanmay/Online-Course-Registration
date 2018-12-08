@@ -22,9 +22,6 @@ admin.site.register(Course)
 admin.site.register(Grade)
 admin.site.register(AuditCourse)
 admin.site.register(AcademicCourse)
-<<<<<<< HEAD
-=======
 admin.site.register(Register)
 admin.site.register(Student)
 admin.site.register(final_Register)
->>>>>>> 46b7ecb7a2ff39815db8c97e82b7a90981e185c9

@@ -2,8 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class CustomUser(AbstractUser):
 
+class CustomUser(AbstractUser):
+	is_student = models.BooleanField(default=False)
+	is_teacher = models.BooleanField(default=False)
 	def __str__(self):
 		return self.email
 
@@ -63,7 +65,7 @@ class Register(models.Model):
 	course = models.CharField(max_length=20, null=True)
 
 	def __str__(self):
-		return u'%s - %s' % (self.student_id, self.course) 
+		return u'%s - %s' % (self.student_id, self.course)
 
 class final_Register(models.Model):
 	student_id = models.CharField(max_length=20, null=True)
@@ -85,9 +87,6 @@ class AcademicCourse(models.Model):
     academic_course_description = models.CharField(db_column='Academic_Course_Description', max_length=250, blank=True, null=True)  # Field name made lowercase.
 
     def __str__(self):
-<<<<<<< HEAD
-    	return self.academic_course_name
-=======
     	return self.description
 
 class AcademicProgBatchSemCourse(models.Model):
@@ -100,4 +99,3 @@ class AcademicProgBatchSemCourse(models.Model):
     
     def __str__(self):
     	return self.description
->>>>>>> 46b7ecb7a2ff39815db8c97e82b7a90981e185c9
